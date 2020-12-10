@@ -40,11 +40,16 @@
                 type="number"
                 small
                 @keyup="updateItem"
-                :max="maxQuantity"
+                :max="item.item_id ? maxQuantity : parseInt('9'.repeat(20))"
                 :min="1"
                 @input="$v.item.quantity.$touch()"
               />
-              <div v-if="$v.item.quantity.$error">
+              <div v-if="!item.item_id">
+                <span v-if="!$v.item.quantity.maxValue || !$v.item.quantity.minValue" class="text-danger">
+                  {{ $t('validation.quantity_min_invoice') }}
+                </span>
+              </div>
+              <div v-else-if="$v.item.quantity.$error">
                 <span v-if="!$v.item.quantity.maxValue" class="text-danger">
                   {{ $tc('validation.quantity_max', $v.item.quantity.maxValue, {count : maxQuantity }) }}
                 </span>
@@ -336,7 +341,7 @@ export default {
         quantity: {
           required,
           minValue: minValue(1),
-          maxValue: maxValue(this.maxQuantity),
+          maxValue: maxValue(this.item.item_id ? this.maxQuantity : parseInt('9'.repeat(20))),
         },
         price: {
           required,
@@ -354,7 +359,6 @@ export default {
   },
   mounted() {
     this.$v.item.$reset()
-    this.maxQuantity = parseInt('9'.repeat(20))
   },
   created() {
     window.hub.$on('checkItems', this.validateItem)
@@ -398,7 +402,7 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.itemSelect.$refs.baseSelect.$refs.search.focus()
-        this.maxQuantity = parseInt('9'.repeat(20))
+        this.maxQuantity = 0
       })
     },
     onSelectItem(item) {
