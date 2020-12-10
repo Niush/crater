@@ -33,6 +33,7 @@ class DatabaseConfigurationController extends Controller
         Artisan::call('cache:clear');
 
         $results = $this->environmentManager->saveDatabaseVariables($request);
+        // $results = ['success'=>'OK'];
 
         if (array_key_exists("success", $results)) {
             Artisan::call('config:clear');

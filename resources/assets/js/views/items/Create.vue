@@ -42,6 +42,23 @@
             </sw-input-group>
 
             <sw-input-group
+              :label="$t('items.quantity')"
+              :error="quantityError"
+              class="mb-4"
+              required
+            >
+              <sw-input
+                v-model.trim="formData.quantity"
+                :invalid="$v.formData.quantity.$error"
+                class="mt-2"
+                type="number"
+                name="quantity"
+                min="0"
+                @input="$v.formData.quantity.$touch()"
+              />
+            </sw-input-group>
+
+            <sw-input-group
               :label="$t('items.price')"
               :error="priceError"
               class="mb-4"
@@ -239,6 +256,20 @@ export default {
       }
     },
 
+    quantityError() {
+      if (!this.$v.formData.quantity.$error) {
+        return ''
+      }
+
+      if (!this.$v.formData.quantity.required) {
+        return this.$t('validation.required')
+      }
+
+      if (!this.$v.formData.quantity.minValue) {
+        return this.$t('validation.quantity_min')
+      }
+    },
+
     priceError() {
       if (!this.$v.formData.price.$error) {
         return ''
@@ -290,6 +321,12 @@ export default {
         numeric,
         maxLength: maxLength(20),
         minValue: minValue(0.1),
+      },
+
+      quantity: {
+        required,
+        numeric,
+        minValue: minValue(0),
       },
 
       description: {

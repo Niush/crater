@@ -34,6 +34,9 @@ class ItemsRequest extends FormRequest
             ],
             'description' => [
                 'nullable'
+            ],
+            'quantity' => [
+                'required'
             ]
         ];
     }

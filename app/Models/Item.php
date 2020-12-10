@@ -40,6 +40,11 @@ class Item extends Model
         return $query->where('items.name', 'LIKE', '%'.$search.'%');
     }
 
+    public function scopeWhereQuantity($query, $quantity)
+    {
+        return $query->where('items.quantity', '<=', $quantity);
+    }
+
     public function scopeWherePrice($query, $price)
     {
         return $query->where('items.price', $price);
@@ -66,6 +71,10 @@ class Item extends Model
 
         if ($filters->get('search')) {
             $query->whereSearch($filters->get('search'));
+        }
+
+        if (is_numeric($filters->get('quantity'))) {
+            $query->whereQuantity($filters->get('quantity'));
         }
 
         if ($filters->get('price')) {

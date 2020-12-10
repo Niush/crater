@@ -25,6 +25,7 @@ class ItemsController extends Controller
             ->leftJoin('units', 'units.id', '=', 'items.unit_id')
             ->applyFilters($request->only([
                 'search',
+                'quantity',
                 'price',
                 'unit_id',
                 'item_id',

@@ -37,14 +37,19 @@
               <sw-input
                 v-model="item.quantity"
                 :invalid="$v.item.quantity.$error"
-                type="text"
+                type="number"
                 small
                 @keyup="updateItem"
+                :max="maxQuantity"
+                :min="1"
                 @input="$v.item.quantity.$touch()"
               />
               <div v-if="$v.item.quantity.$error">
-                <span v-if="!$v.item.quantity.maxLength" class="text-danger">
-                  {{ $t('validation.quantity_maxlength') }}
+                <span v-if="!$v.item.quantity.maxValue" class="text-danger">
+                  {{ $tc('validation.quantity_max', $v.item.quantity.maxValue, {count : maxQuantity }) }}
+                </span>
+                <span v-if="!$v.item.quantity.minValue" class="text-danger">
+                  {{ $t('validation.quantity_min_invoice') }}
                 </span>
               </div>
             </td>
@@ -163,6 +168,7 @@ import DragIcon from '@/components/icon/DragIcon'
 const {
   required,
   minValue,
+  maxValue,
   between,
   maxLength,
 } = require('vuelidate/lib/validators')
@@ -212,6 +218,7 @@ export default {
       itemSelect: null,
       item: { ...this.itemData },
       maxDiscount: 0,
+      maxQuantity: 0,
       money: {
         decimal: '.',
         thousands: ',',
@@ -328,8 +335,8 @@ export default {
         },
         quantity: {
           required,
-          minValue: minValue(0),
-          maxLength: maxLength(20),
+          minValue: minValue(1),
+          maxValue: maxValue(this.maxQuantity),
         },
         price: {
           required,
@@ -347,6 +354,7 @@ export default {
   },
   mounted() {
     this.$v.item.$reset()
+    this.maxQuantity = parseInt('9'.repeat(20))
   },
   created() {
     window.hub.$on('checkItems', this.validateItem)
@@ -390,11 +398,13 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.itemSelect.$refs.baseSelect.$refs.search.focus()
+        this.maxQuantity = parseInt('9'.repeat(20))
       })
     },
     onSelectItem(item) {
       this.item.name = item.name
       this.item.price = item.price
+      this.maxQuantity = item.quantity
       this.item.item_id = item.id
       this.item.description = item.description
       this.item.unit_name = item.unit_name

@@ -43,6 +43,20 @@
         </sw-input-group>
 
         <sw-input-group
+          :label="$tc('items.quantity_less_then')"
+          class="flex-1 mt-2 ml-0 lg:ml-6"
+        >
+          <sw-input
+            v-model="filters.quantity"
+            type="number"
+            min="0"
+            name="quantity"
+            class="mt-2"
+            autocomplete="off"
+          />
+        </sw-input-group>
+
+        <sw-input-group
           :label="$tc('items.unit')"
           class="flex-1 mt-2 ml-0 lg:ml-6"
         >
@@ -180,6 +194,15 @@
           </template>
         </sw-table-column>
 
+        <sw-table-column :sortable="true" :label="$t('items.quantity')" show="quantity">
+          <template slot-scope="row">
+            <span>{{ $t('items.quantity') }}</span>
+            <span>
+              {{ row.quantity || 0 }}
+            </span>
+          </template>
+        </sw-table-column>        
+
         <sw-table-column
           :sortable="true"
           :label="$t('items.unit')"
@@ -278,6 +301,7 @@ export default {
         name: '',
         unit: '',
         price: '',
+        quantity: '',
       },
     }
   },
@@ -356,6 +380,7 @@ export default {
       let data = {
         search: this.filters.name !== null ? this.filters.name : '',
         unit_id: this.filters.unit !== null ? this.filters.unit.id : '',
+        quantity: this.filters.quantity,
         price: this.filters.price * 100,
         orderByField: sort.fieldName || 'created_at',
         orderBy: sort.order || 'desc',
